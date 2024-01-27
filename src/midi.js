@@ -30,20 +30,45 @@ function enableMIDI(element) {
 
 enableMIDI(midi);
 
+function sortNotes(notes) {
+    const noteOrder = ['C', 'C#', 'Db', 'D', 'D#', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', 'G#', 'Ab', 'A', 'A#', 'Bb', 'B'];
+    
+    return notes.sort((a, b) => {
+        const octaveA = parseInt(a.slice(-1), 10);
+        const octaveB = parseInt(b.slice(-1), 10);
+        const noteA = a.slice(0, -1);
+        const noteB = b.slice(0, -1);
+
+        if (octaveA !== octaveB) {
+            return octaveA - octaveB;
+        } else {
+            return noteOrder.indexOf(noteA) - noteOrder.indexOf(noteB);
+        }
+    });
+}
+
+
 currentChord = []
+
+const renderChords = (chordsArray) => {
+    const liItems = chordsArray.map((c) => `<li>${c}</li>`)
+    console.log(liItems)
+    chords = document.getElementById("chords")
+    chords.innerHTML = `${liItems.join("\n")}`
+}
+
+const processPlayedChord = (chord) => {
+    sortNotes(chord)
+    chordNames = Tonal.Chord.detect(currentChord, { assumePerfectFifth: true })
+    renderChords(chordNames)
+}
 
 midi.addEventListener('noteon', (event) => {
     const note = midi.getElementsByTagName("button")[`midi_${event.detail.note}`]
     note.classList.add('keydown')
     noteName = Tonal.Midi.midiToNoteName(event.detail.note)
     currentChord.push(noteName)
-    chordNames = Tonal.Chord.detect(currentChord, { assumePerfectFifth: true })
-    if (chordNames.length == 0) {
-        chordNames = "Unknown"
-    }
-    chord.innerHTML = chordNames
-    
-    // note.style.setProperty('--v', event.detail.velocity)
+    processPlayedChord(currentChord)
 })
 
 midi.addEventListener('noteoff', (event) => {
@@ -51,9 +76,5 @@ midi.addEventListener('noteoff', (event) => {
     noteName = Tonal.Midi.midiToNoteName(event.detail.note)
     currentChord = currentChord.filter((c) => c != noteName)
     note.classList.remove('keydown')
-    chordNames = Tonal.Chord.detect(currentChord, { assumePerfectFifth: true })
-    if (chordNames.length == 0) {
-        chordNames = "Unknown"
-    }
-    chord.innerHTML = chordNames
+    processPlayedChord(currentChord)
 })

@@ -27,10 +27,10 @@ const freqs = (start, end) => {
     });
 };
 
-const render = (data) => data.map(item => `
+const renderPiano = (data) => data.map(item => `
   <button name="midi_${item.midi}" data-note="${item.note}${item.octave}"
   data-freq="${item.freq}" style="--gcs:${item.offset}" 
   type="button>"></button>`).join('\n')
 
-kb88.innerHTML = render(freqs(-48, 40))
+kb88.innerHTML = renderPiano(freqs(-48, 40))
 
