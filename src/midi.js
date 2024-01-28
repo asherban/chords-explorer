@@ -52,7 +52,6 @@ currentChord = []
 
 const renderChords = (chordsArray) => {
     const liItems = chordsArray.map((c) => `<li>${c}</li>`)
-    console.log(liItems)
     chords = document.getElementById("chords")
     chords.innerHTML = `${liItems.join("\n")}`
 }
