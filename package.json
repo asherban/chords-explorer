@@ -1,0 +1,10 @@
+{
+  "name": "chords-explorer",
+  "version": "0.1.0",
+  "description": "Show chords played from a midi piano",
+  "author": "Andrei Sherban",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  }
+}
