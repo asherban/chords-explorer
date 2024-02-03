@@ -1,22 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Russo+One&display=swap');
 
-body {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-}
-
-#chords {
-  flex-grow: 1;
-  overflow: auto;
-}
-
-#midi {
-  flex-shrink: 0;
-}
-
 .kb {
   --_h: 351;
   --v: 79;
@@ -67,31 +50,6 @@ body {
 
 .synth h2 {
   margin: 0 0 .5em 0;
-}
-
-.chord {
-  display: flex;
-  flex-wrap: nowrap;
-  flex-direction: row;
-  gap: 10px;
-  height: 3em;
-  min-height: 3em;
-  align-items: center;
-  justify-content: center;
-}
-
-.chord li {
-  min-width: 10em;
-  max-height: 3em;
-  margin-right: 20px;
-  padding: 10px;
-  border: 1px solid black;
-  border-radius: 0px;
-  background-color: #f0f0f0;
-  font-family: 'Russo One', sans-serif;
-  font-size: 16px;
-  text-align: center;
-  display: block;
 }
 
 /* modifiers */
