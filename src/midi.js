@@ -1,61 +1,71 @@
-export function enableMIDI(element) {
-    let currentChord = []
+import { useCallback, useEffect, useState } from 'react';
+
+export function enableMIDI() {
+    let notes = []
+
+    const addNote = note => {
+        notes = [...notes, note]
+        notes.sort()
+    }
+
+    const removeNote = note => {
+        notes = notes.filter(i => i !== note)
+    }
 
     const getMIDIMessage = message => {
         const [command, note, velocity] = message.data;
         switch (command) {
             case 144: // on
                 if (velocity > 0) {
-                    const event = new CustomEvent('noteon', { detail: { note, velocity } });
-                    element.dispatchEvent(event)
+                    addNote(note)
+                    const event = new CustomEvent("noteschanged", { detail: { notes } })
+                    document.dispatchEvent(event)
                 }
                 break;
             case 128: // off
-                const event = new CustomEvent('noteoff', { detail: { note } });
-                element.dispatchEvent(event)
+                removeNote(note)
+                const event = new CustomEvent("noteschanged", { detail: { notes } })
+                document.dispatchEvent(event)
                 break;
         }
     }
 
     const onMIDISuccess = (midiAccess) => {
-        const count = midiAccess.inputs.size
-        midiCount.innerHTML = count
-        for (var input of midiAccess.inputs.values()) {
-            console.log("Connected midi device:", input.name)
-            input.onmidimessage = getMIDIMessage;
+        const inputs = midiAccess.inputs.values()
+        console.log("on midi success")
+        let count = 0
+        for (var input of inputs) {
+            input.onmidimessage = null
+        }
+        midiAccess.onstatechange = ({ port }) => {
+            console.log("onstatechange", port)
+            if (port.state === "connected") {
+                console.log(port.name, "connected")
+                port.onmidimessage = getMIDIMessage
+                count++
+            } else {
+                count--
+            }
+            const event = new CustomEvent("midideviceschange", { detail: { count } })
+            document.dispatchEvent(event)
         }
     }
 
     const onMIDIError = () => console.log('Could not access your MIDI devices.')
 
     navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIError);
-
-    const renderChords = (chordsArray) => {
-        const liItems = chordsArray.map((c) => `<li>${c}</li>`)
-        const chords = document.getElementById("chords")
-        chords.innerHTML = `${liItems.join("\n")}`
-    }
-    
-    const processPlayedChord = (chord) => {
-        currentChord = Tonal.Note.sortedNames(chord)
-        const chordNames = Tonal.Chord.detect(currentChord, { assumePerfectFifth: true })
-        renderChords(chordNames)
-    }
-    
-    element.addEventListener('noteon', (event) => {
-        const note = element.getElementsByTagName("button")[`midi_${event.detail.note}`]
-        note.classList.add('keydown')
-        const noteName = Tonal.Midi.midiToNoteName(event.detail.note)
-        currentChord.push(noteName)
-        processPlayedChord(currentChord)
-    })
-    
-    element.addEventListener('noteoff', (event) => {
-        const note = element.getElementsByTagName("button")[`midi_${event.detail.note}`]
-        const noteName = Tonal.Midi.midiToNoteName(event.detail.note)
-        currentChord = currentChord.filter((c) => c != noteName)
-        note.classList.remove('keydown')
-        processPlayedChord(currentChord)
-    })
 }
 
+export function useNotes() {
+    const [notes, setNotes] = useState([])
+    const handleNotesChanged = useCallback(({ detail }) => setNotes([...detail.notes]), [notes])
+    useEffect(() => {
+        document.addEventListener("noteschanged", handleNotesChanged)
+
+        return () => {
+            document.removeEventListener("noteschanged", handleNotesChanged)
+        }
+    }, [handleNotesChanged])
+
+    return notes
+}
