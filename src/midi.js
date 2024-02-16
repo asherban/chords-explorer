@@ -1,12 +1,5 @@
-function enableMIDI(element) {
-    const onMIDISuccess = (midiAccess) => {
-        for (var input of midiAccess.inputs.values()) {
-            console.log("Connected midi device:", input.name)
-            input.onmidimessage = getMIDIMessage;
-        }
-    }
-
-    onMIDIError = () => console.log('Could not access your MIDI devices.')
+export function enableMIDI(element) {
+    let currentChord = []
 
     const getMIDIMessage = message => {
         const [command, note, velocity] = message.data;
@@ -24,56 +17,45 @@ function enableMIDI(element) {
         }
     }
 
-    navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIError);
-}
-
-
-enableMIDI(midi);
-
-function sortNotes(notes) {
-    const noteOrder = ['C', 'C#', 'Db', 'D', 'D#', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', 'G#', 'Ab', 'A', 'A#', 'Bb', 'B'];
-    
-    return notes.sort((a, b) => {
-        const octaveA = parseInt(a.slice(-1), 10);
-        const octaveB = parseInt(b.slice(-1), 10);
-        const noteA = a.slice(0, -1);
-        const noteB = b.slice(0, -1);
-
-        if (octaveA !== octaveB) {
-            return octaveA - octaveB;
-        } else {
-            return noteOrder.indexOf(noteA) - noteOrder.indexOf(noteB);
+    const onMIDISuccess = (midiAccess) => {
+        const count = midiAccess.inputs.size
+        midiCount.innerHTML = count
+        for (var input of midiAccess.inputs.values()) {
+            console.log("Connected midi device:", input.name)
+            input.onmidimessage = getMIDIMessage;
         }
-    });
+    }
+
+    const onMIDIError = () => console.log('Could not access your MIDI devices.')
+
+    navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIError);
+
+    const renderChords = (chordsArray) => {
+        const liItems = chordsArray.map((c) => `<li>${c}</li>`)
+        const chords = document.getElementById("chords")
+        chords.innerHTML = `${liItems.join("\n")}`
+    }
+    
+    const processPlayedChord = (chord) => {
+        currentChord = Tonal.Note.sortedNames(chord)
+        const chordNames = Tonal.Chord.detect(currentChord, { assumePerfectFifth: true })
+        renderChords(chordNames)
+    }
+    
+    element.addEventListener('noteon', (event) => {
+        const note = element.getElementsByTagName("button")[`midi_${event.detail.note}`]
+        note.classList.add('keydown')
+        const noteName = Tonal.Midi.midiToNoteName(event.detail.note)
+        currentChord.push(noteName)
+        processPlayedChord(currentChord)
+    })
+    
+    element.addEventListener('noteoff', (event) => {
+        const note = element.getElementsByTagName("button")[`midi_${event.detail.note}`]
+        const noteName = Tonal.Midi.midiToNoteName(event.detail.note)
+        currentChord = currentChord.filter((c) => c != noteName)
+        note.classList.remove('keydown')
+        processPlayedChord(currentChord)
+    })
 }
 
-
-currentChord = []
-
-const renderChords = (chordsArray) => {
-    const liItems = chordsArray.map((c) => `<li>${c}</li>`)
-    chords = document.getElementById("chords")
-    chords.innerHTML = `${liItems.join("\n")}`
-}
-
-const processPlayedChord = (chord) => {
-    sortNotes(chord)
-    chordNames = Tonal.Chord.detect(currentChord, { assumePerfectFifth: true })
-    renderChords(chordNames)
-}
-
-midi.addEventListener('noteon', (event) => {
-    const note = midi.getElementsByTagName("button")[`midi_${event.detail.note}`]
-    note.classList.add('keydown')
-    noteName = Tonal.Midi.midiToNoteName(event.detail.note)
-    currentChord.push(noteName)
-    processPlayedChord(currentChord)
-})
-
-midi.addEventListener('noteoff', (event) => {
-    const note = midi.getElementsByTagName("button")[`midi_${event.detail.note}`]
-    noteName = Tonal.Midi.midiToNoteName(event.detail.note)
-    currentChord = currentChord.filter((c) => c != noteName)
-    note.classList.remove('keydown')
-    processPlayedChord(currentChord)
-})

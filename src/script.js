@@ -1,5 +1,7 @@
+
+
 const getHz = (N = 0) => 440 * Math.pow(2, N / 12);
-const notes = ['A','A#','B','C','C#','D','D#','E','F','F#','G','G#'];
+const notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
 const freqs = (start, end) => {
   let black = 0,
     white = -2;
@@ -12,16 +14,16 @@ const freqs = (start, end) => {
       const octave = Math.ceil(4 + (start + i) / 12);
       if (i === 0 && note === "C") black = -3;
       note.includes("#")
-        ? ((black += 3), ["C#", "F#"].includes(note) 
-        && (black += 3))
+        ? ((black += 3), ["C#", "F#"].includes(note)
+          && (black += 3))
         : (white += 3);
 
       return {
         note,
         midi: midi,
         freq: getHz(start + i),
-        octave: note === "B" || note === "A#" 
-        ? octave - 1 : octave,
+        octave: note === "B" || note === "A#"
+          ? octave - 1 : octave,
         offset: note.includes("#") ? black : white,
       };
     });
@@ -33,4 +35,6 @@ const renderPiano = (data) => data.map(item => `
   type="button>"></button>`).join('\n')
 
 kb88.innerHTML = renderPiano(freqs(-48, 40))
+
+
 
