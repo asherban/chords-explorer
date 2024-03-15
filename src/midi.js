@@ -1,4 +1,19 @@
 import { useCallback, useEffect, useState } from 'react';
+import { requestWakeLock, releaseWakeLock } from './wakelock';
+
+let wakeLockTimer = null
+const wakeLockTimeout = 5 * 1000 * 60 // 5 minutes
+
+function notifyNoteChangedEvent(notes) {
+    const event = new CustomEvent("noteschanged", { detail: { notes } })
+    document.dispatchEvent(event)
+
+    if (wakeLockTimer !== null) {
+        clearTimeout(wakeLockTimer)
+    }
+    wakeLockTimer = setTimeout(() => releaseWakeLock(), wakeLockTimeout)
+    requestWakeLock()
+}
 
 export function enableMIDI() {
     let notes = []
@@ -18,14 +33,12 @@ export function enableMIDI() {
             case 144: // on
                 if (velocity > 0) {
                     addNote(note)
-                    const event = new CustomEvent("noteschanged", { detail: { notes } })
-                    document.dispatchEvent(event)
+                    notifyNoteChangedEvent(notes)
                 }
                 break;
             case 128: // off
                 removeNote(note)
-                const event = new CustomEvent("noteschanged", { detail: { notes } })
-                document.dispatchEvent(event)
+                notifyNoteChangedEvent(notes)
                 break;
         }
     }
