@@ -1,0 +1,7 @@
+- [ ] Allow sections
+- [ ] Add learn section
+    - [ ] Chords trainer
+        - [ ] Chords by type
+        - [ ] By scale
+        - [ ] Smooth voice leadings
+    - [ ] Read notes trainer
