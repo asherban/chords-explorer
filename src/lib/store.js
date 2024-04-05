@@ -5,7 +5,7 @@ import { enableMIDI } from "./midi";
 
 
 let state = {
-    notesPlaying: ["c5", "e5", "g5"],
+    notesPlaying: [],
     midiDeviceCount: 0,
     wakeLock: false,
     assumePerfectFifth: true,

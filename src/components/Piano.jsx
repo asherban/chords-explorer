@@ -1,5 +1,4 @@
 import './Piano.css'
-import { useNotes } from '../midi';
 
 const getHz = (N = 0) => 440 * Math.pow(2, N / 12);
 const notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
