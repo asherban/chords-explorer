@@ -1,4 +1,5 @@
 import './Piano.css'
+import PropTypes from 'prop-types'
 
 const getHz = (N = 0) => 440 * Math.pow(2, N / 12);
 const notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
@@ -40,6 +41,11 @@ function PianoKey({ note, offset, pressed }) {
         type="button"
     ></div>
 }
+PianoKey.propTypes = {
+    note: PropTypes.string.isRequired,
+    offset: PropTypes.number.isRequired,
+    pressed: PropTypes.bool.isRequired
+}
 
 function Piano({notes}) {
     return (
@@ -54,6 +60,9 @@ function Piano({notes}) {
             </div>
         </div>
     )
+}
+Piano.propTypes = {
+    notes: PropTypes.array.isRequired
 }
 
 export default Piano

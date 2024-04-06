@@ -2,8 +2,9 @@
 // License: MIT
 // Credit: https://github.com/markacola 
 
-import React, { useRef, useEffect } from 'react'
-import VexFlow from 'vexflow'
+import { useRef, useEffect } from 'react';
+import VexFlow from 'vexflow';
+import PropTypes from 'prop-types';
 
 const { Factory } = VexFlow.Flow
 
@@ -30,6 +31,9 @@ function Score({ notes }) {
     }, [notes])
 
     return <div ref={container} style={{ width: '100%' }} />
+}
+Score.propTypes = {
+    notes: PropTypes.array.isRequired
 }
 
 export default Score;

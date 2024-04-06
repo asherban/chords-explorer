@@ -1,5 +1,4 @@
 import { produce } from "immer";
-import { useReducer } from "react";
 import { Midi, Note } from "tonal";
 import { enableMIDI } from "./midi";
 
@@ -30,15 +29,17 @@ const emitChange = () => {
 export const dispatch = (action) => {
     state = produce(state, (draft) => {
         switch (action.type) {
-            case ACTIONS.ADD_MIDI_NOTE:
+            case ACTIONS.ADD_MIDI_NOTE: {
                 const newNote = Midi.midiToNoteName(action.payload)
                 draft.notesPlaying.push(newNote)
                 draft.notesPlaying = Note.sortedUniqNames(draft.notesPlaying)
                 break;
-            case ACTIONS.REMOVE_MIDI_NOTE:
+            }
+            case ACTIONS.REMOVE_MIDI_NOTE: {
                 const noteToRemove = Midi.midiToNoteName(action.payload)
                 draft.notesPlaying = draft.notesPlaying.filter(note => note !== noteToRemove)
                 break;
+            }
             case ACTIONS.SET_PLAYING_NOTES:
                 draft.notesPlaying = action.payload
                 break;

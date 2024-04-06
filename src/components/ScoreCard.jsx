@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@mui/material";
-import { Flow } from "vexflow";
 import Score from "./Score";
+import PropTypes from 'prop-types';
 
 function StaveCard({notes}) {
     return (
@@ -10,6 +10,9 @@ function StaveCard({notes}) {
             </CardContent>
         </Card>
     );
+}
+StaveCard.propTypes = {
+    notes: PropTypes.array.isRequired
 }
 
 export default StaveCard;

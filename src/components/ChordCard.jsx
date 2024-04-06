@@ -1,6 +1,6 @@
 import { Card, CardContent, Typography } from '@mui/material';
-import React from 'react';
 import { Chord } from 'tonal';
+import PropTypes from 'prop-types';
 
 const ChordCard = ({ notes, assumePerfectFifth }) => {
     const chords = Chord.detect(notes, { assumePerfectFifth: assumePerfectFifth });
@@ -17,6 +17,10 @@ const ChordCard = ({ notes, assumePerfectFifth }) => {
             </CardContent>
         </Card>
     );
+};
+ChordCard.propTypes = {
+    notes: PropTypes.array.isRequired,
+    assumePerfectFifth: PropTypes.bool.isRequired
 };
 
 export default ChordCard;

@@ -2,7 +2,7 @@ import AppHeader from "../components/AppHeader";
 import Piano from "../components/Piano";
 import ChordCard from "../components/ChordCard";
 import Box from '@mui/material/Box';
-import React from 'react';
+import PropTypes from 'prop-types';
 
 function MainScreen({state}) {
     return (
@@ -18,6 +18,9 @@ function MainScreen({state}) {
             </Box>
         </Box>
     );
+}
+MainScreen.propTypes = {
+    state: PropTypes.object.isRequired
 }
 
 export default MainScreen;
